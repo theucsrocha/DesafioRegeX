@@ -1,4 +1,6 @@
 package Test
 
-class TestDesafio {
+import spock.lang.Specification
+
+class TestDesafio extends Specification {
 }
