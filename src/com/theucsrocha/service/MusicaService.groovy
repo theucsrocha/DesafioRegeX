@@ -75,9 +75,100 @@ Deus lhe pague
         return listaDePalavrasComCAO
     }
 
+    List<String> palavrasDitongo(String texto){
+        def regexDitongos = /(?i)\b\w*(?:[aá]i|[aã]u|[eé]i|[eé]u|[oó]i|ou|[uú]i|ão|õe|ãe|am|em|en)(?![rl]\b)(?![íú])\w*\b/
+        List<String> ditongos = texto.findAll(regexDitongos)
+        return ditongos
+    }
+
+    List<String> palavrasTritongo(String texto){
+        def regexTritongos = /(?i)\b\w*[gq](?:uai|uei|uio|uiu|uão|uões|uam|uem)\w*\b/
+        List<String> tritongos = texto.findAll(regexTritongos)
+        return tritongos
+    }
+
+    List<String> palavrasHiato(String texto) {
+        List<String> resultado = []
+
+        // 1. Pega todas as palavras que tenham 2 ou mais vogais juntas
+        def palavrasComVogais = texto.findAll(/(?i)\b\p{L}*[aeiouáéíóúâêôãõ]{2,}\p{L}*\b/)
+
+        for (String palavra : palavrasComVogais) {
+            String p = palavra.toLowerCase()
+
+            // REGRA 1: Hiatos Clássicos e Garantidos
+            // Vogais idênticas, encontros de abertas (oa, eo) e acentuadas (aí, aú)
+            if (p =~ /(aa|ee|ii|oo|uu|ae|ao|ea|eo|oa|oe|aí|aú|eí|eú|oí|oú|uí)/) {
+                resultado.add(palavra)
+                continue
+            }
+
+            // REGRA 2: Palavras terminadas em 'ua', 'uo', 'ia', 'io' (como su-a, ru-a, mei-o)
+            // O (?<![qg]) garante que vamos ignorar se vier depois de Q ou G
+            if (p =~ /(?<![qg])(ua|uo|ia|io)s?$/) {
+                resultado.add(palavra)
+                continue
+            }
+
+            // REGRA 3: O caso do verbo no infinitivo (ca-ir, sa-ir, tra-ir)
+            if (p =~ /air$/) {
+                resultado.add(palavra)
+                continue
+            }
+
+            // O caso específico de "flutuou" (hiato no 'uo' seguido de ditongo 'ou')
+            if (p =~ /(?<![qg])uou$/) {
+                resultado.add(palavra)
+                continue
+            }
+        }
+        return resultado.unique()
+    }
+
 
     String getLetra(){
         return letra
+    }
+
+    Map<String,Integer> retornarFrases(String texto){
+        List<String> frases = texto.findAll(/.+\n/)
+        Map<String,Integer> mapDeFrases = [:]
+        frases.forEach { frase->
+            int contadorFrases = 0
+            for(String fraseTeste:frases){
+                if(frase==fraseTeste){
+                    contadorFrases++
+                }
+            }
+            if(contadorFrases>1){
+                mapDeFrases.put(frase,contadorFrases)
+            }
+
+        }
+    return mapDeFrases
+    }
+
+    Map<String, Integer> retornarFrases4palavras(String texto){
+        List<String> frases = texto.findAll(/(?Um)^[^\S\r\n]*\b\p{L}+(?:[^\S\r\n]+\p{L}+){3}\b/)
+        Map<String, Integer> mapDeFrases = [:]
+
+        frases.forEach { frase ->
+
+            String fraseLimpa = frase.trim()
+
+            int contadorFrases = 0
+            for (String fraseTeste : frases) {
+                if (fraseLimpa == fraseTeste.trim()) {
+                    contadorFrases++
+                }
+            }
+
+            if (contadorFrases > 0) {
+
+                mapDeFrases.put(fraseLimpa, contadorFrases)
+            }
+        }
+        return mapDeFrases
     }
 
 

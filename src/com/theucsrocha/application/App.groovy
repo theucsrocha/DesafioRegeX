@@ -10,6 +10,14 @@ class App {
         String letra = musicaService.letra
 
         println(musicaService.palavrasComCAO(letra))
+        println(musicaService.palavrasDitongo(letra))
+        println(musicaService.palavrasTritongo(letra))
+        println(musicaService.palavrasHiato(letra))
+        println(musicaService.retornarFrases(letra))
+        println(musicaService.retornarFrases4palavras(letra))
+
+
+
     }
 
 }
